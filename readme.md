@@ -2,7 +2,7 @@
 
 A Substrate pallet for account-level permissioning.
 
-The module maintains a whitelist of accounts and allows the sudo user to add/remove accounts from this whitelist.
+The pallet maintains a whitelist of accounts and allows the sudo user to add/remove accounts from this whitelist.
 
 The filtering of incoming transactions is done by implementing the `SignedExtension` trait.
 
@@ -12,8 +12,8 @@ The filtering of incoming transactions is done by implementing the `SignedExtens
 
 ```toml
 [dependencies.accountset]
-package = "substrate-account-set"
-path = "../../substrate-account-set"
+package = 'substrate-account-set'
+git = 'https://github.com/gautamdhameja/substrate-account-set.git'
 default-features = false
 ```
 
@@ -65,7 +65,15 @@ When the node starts, only the account ids added in the genesis config of this m
 
 New account ids could be added to the whitelist by calling the module's `add_account` function using `root` key as origin.
 
-Potential extension:
+## Sample
+
+The usage of this pallet are demonstrated in the [Substrate permissioning sample](https://github.com/gautamdhameja/substrate-permissioning).
+
+## Potential extension:
 
 * The addition and removal of account id's to the whitelist could also be done using other governance methods instead of root.
 * The logic can be reversed to maintain a blacklist of accounts which cannot send extrinsics to the runtime.
+
+## Disclaimer
+
+This code not audited and reviewed for production use cases. You can expect bugs and security vulnerabilities. Do not use it as-is in real applications.
