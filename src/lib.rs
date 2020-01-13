@@ -25,7 +25,7 @@ pub trait Trait: system::Trait {
 
 decl_storage! {
     trait Store for Module<T: Trait> as AccountSet {
-        WhitelistedAccounts get(whitelisted_accounts) config(): map T::AccountId => Option<()>;
+        WhitelistedAccounts get(whitelisted_accounts) config(): map T::AccountId => Option<bool>;
     }
 }
 
@@ -39,7 +39,7 @@ decl_module! {
         pub fn add_account(origin, new_account: T::AccountId) -> dispatch::DispatchResult {
             ensure_root(origin)?;
 
-            <WhitelistedAccounts<T>>::insert(&new_account, ());
+            <WhitelistedAccounts<T>>::insert(&new_account, true);
 
             Self::deposit_event(RawEvent::AccountWhitelisted(new_account));
 

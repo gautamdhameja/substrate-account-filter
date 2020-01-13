@@ -54,8 +54,8 @@ pub type SignedExtra = (
 
 ```rust
     accountset: Some(AccountSetConfig {
-        whitelisted_accounts: vec![(get_account_id_from_seed::<sr25519::Public>("Alice"), ()),
-            (get_account_id_from_seed::<sr25519::Public>("Bob"), ())],
+        whitelisted_accounts: vec![(get_account_id_from_seed::<sr25519::Public>("Alice"), true),
+            (get_account_id_from_seed::<sr25519::Public>("Bob"), true)],
     }),
 ```
 
