@@ -25,7 +25,7 @@ pub trait Trait: system::Trait {
 
 decl_storage! {
     trait Store for Module<T: Trait> as AccountSet {
-        WhitelistedAccounts get(whitelisted_accounts) config(): map T::AccountId => ();
+        WhitelistedAccounts get(whitelisted_accounts) config(): map T::AccountId => Option<()>;
     }
 }
 
