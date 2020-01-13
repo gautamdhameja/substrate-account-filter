@@ -50,12 +50,12 @@ pub type SignedExtra = (
     accountset::WhitelistAccount<Runtime>
 ```
 
-* Add genesis configuration for the module in the `src/chain_spec.rs` file. This configuration add the initial account ids to the account whitelist.
+* Add genesis configuration for the module in the `src/chain_spec.rs` file. This configuration adds the initial account ids to the account whitelist.
 
 ```rust
     accountset: Some(AccountSetConfig {
-        whitelisted_accounts: vec![(get_from_seed::<AccountId>("Alice"), true),
-            (get_from_seed::<AccountId>("Bob"), true)],
+        whitelisted_accounts: vec![(get_account_id_from_seed::<sr25519::Public>("Alice"), ()),
+            (get_account_id_from_seed::<sr25519::Public>("Bob"), ())],
     }),
 ```
 

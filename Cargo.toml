@@ -1,7 +1,7 @@
 [package]
 name = "substrate-account-set"
-version = "0.1.0"
-authors = ["Gautam Dhameja <gautam@parity.io>"]
+version = "0.2.0"
+authors = ["gautamdhameja"]
 edition = "2018"
 
 [features]

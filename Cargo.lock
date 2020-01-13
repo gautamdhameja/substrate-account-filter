@@ -1342,7 +1342,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "substrate-account-set"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "frame-support 2.0.0 (git+https://github.com/paritytech/substrate.git?rev=9ded493bac83f9d2a66e6afce068e2ead2bd20ab)",
  "frame-system 2.0.0 (git+https://github.com/paritytech/substrate.git?rev=9ded493bac83f9d2a66e6afce068e2ead2bd20ab)",

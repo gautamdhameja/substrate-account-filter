@@ -25,7 +25,7 @@ pub trait Trait: system::Trait {
 
 decl_storage! {
     trait Store for Module<T: Trait> as AccountSet {
-        WhitelistedAccounts get(whitelisted_accounts) config(): map T::AccountId => bool;
+        WhitelistedAccounts get(whitelisted_accounts) config(): map T::AccountId => ();
     }
 }
 
@@ -39,9 +39,21 @@ decl_module! {
         pub fn add_account(origin, new_account: T::AccountId) -> dispatch::DispatchResult {
             ensure_root(origin)?;
 
-            <WhitelistedAccounts<T>>::insert(new_account.clone(), true);
+            <WhitelistedAccounts<T>>::insert(&new_account, ());
 
             Self::deposit_event(RawEvent::AccountWhitelisted(new_account));
+
+            Ok(())
+        }
+
+        /// Remove an account from the whitelist.
+        /// Can only be called by the root.
+        pub fn remove_account(origin, account_to_remove: T::AccountId) -> dispatch::DispatchResult {
+            ensure_root(origin)?;
+
+            <WhitelistedAccounts<T>>::remove(&account_to_remove);
+
+            Self::deposit_event(RawEvent::AccountRemoved(account_to_remove));
 
             Ok(())
         }
@@ -55,6 +67,8 @@ decl_event!(
     {
         // When a new account is added to the whitelist.
         AccountWhitelisted(AccountId),
+        // When an account is removed from the whitelist.
+        AccountRemoved(AccountId),
     }
 );
 
