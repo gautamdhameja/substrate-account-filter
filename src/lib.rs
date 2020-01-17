@@ -1,3 +1,9 @@
+//! # Account Set Pallet
+//!
+//! The Account Set Pallet provides functionality to restrict extrinsic submission to a set of
+//! whitelisted accounts.
+
+
 #![cfg_attr(not(feature = "std"), no_std)]
 
 use sp_std::prelude::*;
