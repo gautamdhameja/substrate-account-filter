@@ -1,3 +1,9 @@
+//! # Account Set Pallet
+//!
+//! The Account Set Pallet provides functionality to restrict extrinsic submission to a set of
+//! whitelisted accounts.
+
+
 #![cfg_attr(not(feature = "std"), no_std)]
 
 use sp_std::prelude::*;
@@ -25,6 +31,9 @@ pub trait Trait: system::Trait {
 
 decl_storage! {
     trait Store for Module<T: Trait> as AccountSet {
+
+        // The whitelist is a _set_ of accounts. Because maps are supported by decl_storage,
+        // we map to Option<bool> which is never used.
         WhitelistedAccounts get(whitelisted_accounts) config(): map T::AccountId => Option<bool>;
     }
 }

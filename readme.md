@@ -2,13 +2,13 @@
 
 A Substrate pallet for account-level permissioning.
 
-The pallet maintains a whitelist of accounts and allows the sudo user to add/remove accounts from this whitelist.
+The pallet maintains a whitelist of accounts that are permitted to submit extrinsics, and allows the sudo user to add and remove accounts from this whitelist.
 
 The filtering of incoming transactions is done by implementing the `SignedExtension` trait.
 
 ## Usage
 
-* Add the module's dependency in the `cargo.toml` of your `runtime` directory. Make sure to enter correct path or git url of the module as per your setup.
+* Add the module's dependency in the `Cargo.toml` of your `runtime` directory. Make sure to enter the correct path or git url of the pallet as per your setup.
 
 ```toml
 [dependencies.accountset]
@@ -17,12 +17,12 @@ git = 'https://github.com/gautamdhameja/substrate-account-set.git'
 default-features = false
 ```
 
-* Declare the module in your `runtime/src/lib.rs`.
+* Declare the pallet in your `runtime/src/lib.rs`.
 
 ```rust
-pub use accountset;
+pub use substrate_account_set;
 
-impl accountset::Trait for Runtime {
+impl substrate_account_set::Trait for Runtime {
     type Event = Event;
 }
 
@@ -35,7 +35,7 @@ construct_runtime!(
         ...
         ...
         ...
-        AccountSet: accountset::{Module, Call, Storage, Event<T>, Config<T>},
+        AccountSet: substrate_account_set::{Module, Call, Storage, Event<T>, Config<T>},
     }
 );
 ```
@@ -47,23 +47,23 @@ pub type SignedExtra = (
     ...
     ...
     balances::TakeFees<Runtime>,
-    accountset::WhitelistAccount<Runtime>
+    substrate_account_set::WhitelistAccount<Runtime>
 ```
 
-* Add genesis configuration for the module in the `src/chain_spec.rs` file. This configuration adds the initial account ids to the account whitelist.
+* Add a genesis configuration for the module in the `src/chain_spec.rs` file. This configuration adds the initial account ids to the account whitelist.
 
 ```rust
-    accountset: Some(AccountSetConfig {
+    substrate_Account_set: Some(AccountSetConfig {
         whitelisted_accounts: vec![(get_account_id_from_seed::<sr25519::Public>("Alice"), true),
             (get_account_id_from_seed::<sr25519::Public>("Bob"), true)],
     }),
 ```
 
-* `cargo build` and then `cargo run -- --dev`
+* `cargo build --release` and then `cargo run --release -- --dev`
 
-When the node starts, only the account ids added in the genesis config of this module would be able to send extrinsics to the runtime.
+When the node starts, only the account ids added in the genesis config of this module will be able to send extrinsics to the runtime. This means that you should not leave the genesis config empty or else no one will be able to submit any extrinsics.
 
-New account ids could be added to the whitelist by calling the module's `add_account` function using `root` key as origin.
+New account ids can be added to the whitelist by calling the module's `add_account` function using `root` key as origin.
 
 ## Sample
 
