@@ -15,7 +15,6 @@ std = [
     'sp-io/std',
     'system/std',
     'serde',
-    'safe-mix/std',
 ]
 
 [dependencies.codec]
@@ -27,24 +26,20 @@ version = '1.0.0'
 [dependencies.sp-std]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
-rev = '9ded493bac83f9d2a66e6afce068e2ead2bd20ab'
+rev = '85b65a38330e732689c5d8d5cfe75ba53b9dc873'
 version = '2.0.0'
 
 [dependencies.sp-runtime]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
-rev = '9ded493bac83f9d2a66e6afce068e2ead2bd20ab'
+rev = '85b65a38330e732689c5d8d5cfe75ba53b9dc873'
 version = '2.0.0'
 
 [dependencies.sp-io]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
-rev = '9ded493bac83f9d2a66e6afce068e2ead2bd20ab'
+rev = '85b65a38330e732689c5d8d5cfe75ba53b9dc873'
 version = '2.0.0'
-
-[dependencies.safe-mix]
-default-features = false
-version = '1.0'
 
 [dependencies.serde]
 features = ['derive']
@@ -54,18 +49,18 @@ version = '1.0.101'
 [dependencies.sp-core]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
-rev = '9ded493bac83f9d2a66e6afce068e2ead2bd20ab'
+rev = '85b65a38330e732689c5d8d5cfe75ba53b9dc873'
 version = '2.0.0'
 
 [dependencies.frame-support]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
-rev = '9ded493bac83f9d2a66e6afce068e2ead2bd20ab'
+rev = '85b65a38330e732689c5d8d5cfe75ba53b9dc873'
 version = '2.0.0'
 
 [dependencies.system]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
 package = 'frame-system'
-rev = '9ded493bac83f9d2a66e6afce068e2ead2bd20ab'
+rev = '85b65a38330e732689c5d8d5cfe75ba53b9dc873'
 version = '2.0.0'

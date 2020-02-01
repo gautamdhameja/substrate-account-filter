@@ -34,7 +34,7 @@ decl_storage! {
 
         // The whitelist is a _set_ of accounts. Because maps are supported by decl_storage,
         // we map to bool which is never used.
-        WhitelistedAccounts get(whitelisted_accounts) config(): map T::AccountId => bool;
+        WhitelistedAccounts get(whitelisted_accounts) config(): map hasher(blake2_256) T::AccountId => bool;
     }
 }
 
@@ -115,6 +115,7 @@ impl<T: Trait + Send + Sync> SignedExtension for WhitelistAccount<T> {
     type DispatchInfo = DispatchInfo;
     type Call = T::Call;
     type Pre = ();
+    const IDENTIFIER: &'static str = "WhitelistAccount";
     
     fn additional_signed(&self) -> sp_std::result::Result<(), TransactionValidityError> { Ok(()) }
 
