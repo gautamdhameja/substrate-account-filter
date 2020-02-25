@@ -4,7 +4,7 @@ A Substrate pallet for account-level permissioning.
 
 The pallet maintains a whitelist of accounts that are permitted to submit extrinsics, and allows the sudo user to add and remove accounts from this whitelist.
 
-The filtering of incoming transactions is done by implementing the `SignedExtension` trait.
+The filtering of incoming transactions is done using the `SignedExtension` trait.
 
 ## Usage
 

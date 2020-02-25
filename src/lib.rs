@@ -33,7 +33,7 @@ decl_storage! {
     trait Store for Module<T: Trait> as AccountSet {
 
         // The whitelist is a _set_ of accounts. Because maps are supported by decl_storage,
-        // we map to bool which is never used.
+        // we map to () to avoid extra storage.
         WhitelistedAccounts get(whitelisted_accounts): map hasher(blake2_256) T::AccountId => ();
     }
 	add_extra_genesis {
@@ -89,7 +89,7 @@ decl_event!(
     }
 );
 
-/// The following section of the code implements the `SignedExtension` trait
+/// The following section implements the `SignedExtension` trait
 /// for the `WhitelistAccount` type.
 /// `SignedExtension` is being used here to filter out the non-whitelisted accounts
 /// when they try to send extrinsics to the runtime.
@@ -137,7 +137,7 @@ impl<T: Trait + Send + Sync> SignedExtension for WhitelistAccount<T> {
         info: DispatchInfo,
         _len: usize,
     ) -> TransactionValidity {
-        if <WhitelistedAccounts<T>>::exists(who) {
+        if <WhitelistedAccounts<T>>::contains_key(who) {
             Ok(ValidTransaction {
                 priority: info.weight as TransactionPriority,
                 longevity: TransactionLongevity::max_value(),
