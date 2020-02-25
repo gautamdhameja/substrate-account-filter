@@ -34,8 +34,16 @@ decl_storage! {
 
         // The whitelist is a _set_ of accounts. Because maps are supported by decl_storage,
         // we map to bool which is never used.
-        WhitelistedAccounts get(whitelisted_accounts) config(): map hasher(blake2_256) T::AccountId => bool;
+        WhitelistedAccounts get(whitelisted_accounts): map hasher(blake2_256) T::AccountId => ();
     }
+	add_extra_genesis {
+		config(whitelisted_accounts): Vec<T::AccountId>;
+		build(|config: &GenesisConfig<T>| {
+			for acct in config.whitelisted_accounts.iter() {
+				<WhitelistedAccounts<T>>::insert(acct, ());
+			}
+		})
+	}
 }
 
 decl_module! {
@@ -48,7 +56,7 @@ decl_module! {
         pub fn add_account(origin, new_account: T::AccountId) -> dispatch::DispatchResult {
             ensure_root(origin)?;
 
-            <WhitelistedAccounts<T>>::insert(&new_account, true);
+            <WhitelistedAccounts<T>>::insert(&new_account, ());
 
             Self::deposit_event(RawEvent::AccountWhitelisted(new_account));
 
@@ -86,9 +94,9 @@ decl_event!(
 /// `SignedExtension` is being used here to filter out the non-whitelisted accounts
 /// when they try to send extrinsics to the runtime.
 /// Inside the `validate` function of the `SignedExtension` trait,
-/// we check if the sender (origin) of the extrinsic is part of the 
+/// we check if the sender (origin) of the extrinsic is part of the
 /// whitelist or not.
-/// The extrinsic will be rejected as invalid if the origin is not part 
+/// The extrinsic will be rejected as invalid if the origin is not part
 /// of the whitelist.
 
 /// The `WhitelistAccount` struct.
@@ -116,7 +124,7 @@ impl<T: Trait + Send + Sync> SignedExtension for WhitelistAccount<T> {
     type Call = T::Call;
     type Pre = ();
     const IDENTIFIER: &'static str = "WhitelistAccount";
-    
+
     fn additional_signed(&self) -> sp_std::result::Result<(), TransactionValidityError> { Ok(()) }
 
     // Filter out the non-whitelisted keys.
