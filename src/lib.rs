@@ -12,7 +12,7 @@ use sp_std::fmt::Debug;
 use frame_support::{
     decl_event, decl_storage, decl_module,
     dispatch,
-    weights::{DispatchInfo},
+    weights::DispatchInfo,
 };
 use system::{self as system, ensure_root};
 use sp_runtime::{
@@ -37,7 +37,7 @@ decl_storage! {
     }
 	add_extra_genesis {
 		config(allowed_accounts): Vec<T::AccountId>;
-		build(|config: &GenesisConfig<T>| {
+		build(|config| {
 			for acct in config.allowed_accounts.iter() {
 				<AllowedAccounts<T>>::insert(acct, ());
 			}

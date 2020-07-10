@@ -54,8 +54,9 @@ pub type SignedExtra = (
 
 ```rust
     substrate_account_set: Some(AccountSetConfig {
-        allowed_accounts: vec![(get_account_id_from_seed::<sr25519::Public>("Alice"), true),
-            (get_account_id_from_seed::<sr25519::Public>("Bob"), true)],
+        allowed_accounts: vec![
+            (get_account_id_from_seed::<sr25519::Public>("Alice"), ()),
+            (get_account_id_from_seed::<sr25519::Public>("Bob"), ())],
     }),
 ```
 
@@ -69,7 +70,7 @@ New `AccountId`s can be added to the allow-list by calling the pallet's `add_acc
 
 The usage of this pallet are demonstrated in the [Substrate permissioning sample](https://github.com/gautamdhameja/substrate-permissioning).
 
-## Potential extension:
+## Potential extension
 
 * The addition and removal of account id's to the allow-list could also be done using other governance methods instead of root.
 * The logic can be reversed to maintain a deny-list of accounts which cannot send extrinsics to the runtime.
