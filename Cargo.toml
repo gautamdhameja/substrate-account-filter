@@ -3,6 +3,8 @@ name = "substrate-account-set"
 version = "0.3.0"
 authors = ["gautamdhameja"]
 edition = "2018"
+license = "Apache-2.0"
+repository = "https://github.com/gautamdhameja/substrate-account-set"
 
 [features]
 default = ['std']
