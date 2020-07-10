@@ -1,10 +1,10 @@
 # Substrate Account Set
 
-A Substrate pallet for account-level permissioning.
+A [Substrate](https://github.com/paritytech/substrate) pallet for account-level permissioning.
 
-The pallet maintains a whitelist of accounts that are permitted to submit extrinsics, and allows the sudo user to add and remove accounts from this whitelist.
+The pallet maintains a allow-list of accounts that are permitted to submit extrinsics. Sudo (or any other governance mechanism, when supported) could be used to add and remove accounts from this list.
 
-The filtering of incoming transactions is done by implementing the `SignedExtension` trait.
+The filtering of incoming extrinsics and their sender accounts is done at the transaction queue validation layer, using the `SignedExtension` trait.
 
 ## Usage
 
@@ -40,21 +40,21 @@ construct_runtime!(
 );
 ```
 
-* Add the module's `WhitelistAccount` type in the `SignedExtra` checklist.
+* Add the module's `AllowAccount` type in the `SignedExtra` checklist.
 
 ```rust
 pub type SignedExtra = (
     ...
     ...
     balances::TakeFees<Runtime>,
-    substrate_account_set::WhitelistAccount<Runtime>
+    substrate_account_set::AllowAccount<Runtime>
 ```
 
-* Add a genesis configuration for the module in the `src/chain_spec.rs` file. This configuration adds the initial account ids to the account whitelist.
+* Add a genesis configuration for the module in the `src/chain_spec.rs` file. This configuration adds the initial account ids to the account allow-list.
 
 ```rust
     substrate_account_set: Some(AccountSetConfig {
-        whitelisted_accounts: vec![(get_account_id_from_seed::<sr25519::Public>("Alice"), true),
+        allowed_accounts: vec![(get_account_id_from_seed::<sr25519::Public>("Alice"), true),
             (get_account_id_from_seed::<sr25519::Public>("Bob"), true)],
     }),
 ```
@@ -63,7 +63,7 @@ pub type SignedExtra = (
 
 When the node starts, only the account ids added in the genesis config of this module will be able to send extrinsics to the runtime. This means that you **should not leave the genesis config empty** or else no one will be able to submit any extrinsics.
 
-New `AccountId`s can be added to the whitelist by calling the pallet's `add_account` function using `root` key as origin.
+New `AccountId`s can be added to the allow-list by calling the pallet's `add_account` function using `root` key as origin.
 
 ## Sample
 
@@ -71,8 +71,8 @@ The usage of this pallet are demonstrated in the [Substrate permissioning sample
 
 ## Potential extension:
 
-* The addition and removal of account id's to the whitelist could also be done using other governance methods instead of root.
-* The logic can be reversed to maintain a blacklist of accounts which cannot send extrinsics to the runtime.
+* The addition and removal of account id's to the allow-list could also be done using other governance methods instead of root.
+* The logic can be reversed to maintain a deny-list of accounts which cannot send extrinsics to the runtime.
 
 ## Disclaimer
 
