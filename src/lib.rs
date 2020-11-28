@@ -1,7 +1,7 @@
 //! # Account Set Pallet
 //!
 //! The Account Set Pallet provides functionality to restrict extrinsic submission to a set of
-//! allowed accounts.
+//! allowed accounts. The filtering of accounts is done during the transaction queue validation.
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
@@ -14,7 +14,7 @@ use frame_support::{
     dispatch,
     weights::DispatchInfo,
 };
-use system::{self as system, ensure_root};
+use frame_system::{self as system, ensure_root};
 use sp_runtime::{
     transaction_validity::{
 		ValidTransaction, TransactionValidityError,
@@ -33,16 +33,16 @@ decl_storage! {
 
         // The allow-list is a _set_ of accounts. Because maps are supported by decl_storage,
         // we map to (), and use the map for faster lookups.
-        AllowedAccounts get(fn allowed_accounts): map hasher(opaque_blake2_256) T::AccountId => ();
+        AllowedAccounts get(fn allowed_accounts) config(): map hasher(blake2_128_concat) T::AccountId => ();
     }
-	add_extra_genesis {
-		config(allowed_accounts): Vec<T::AccountId>;
-		build(|config| {
-			for acct in config.allowed_accounts.iter() {
-				<AllowedAccounts<T>>::insert(acct, ());
-			}
-		})
-	}
+	// add_extra_genesis {
+	// 	config(allowed_accounts): Vec<T::AccountId>;
+	// 	build(|config: &GenesisConfig<T>| {
+	// 		for acct in config.allowed_accounts.iter() {
+	// 			<AllowedAccounts<T>>::insert(acct, ());
+	// 		}
+	// 	})
+	// }
 }
 
 decl_module! {

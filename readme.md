@@ -4,14 +4,14 @@ A [Substrate](https://github.com/paritytech/substrate) pallet for account-level 
 
 The pallet maintains a allow-list of accounts that are permitted to submit extrinsics. Sudo (or any other governance mechanism, when supported) could be used to add and remove accounts from this list.
 
-The filtering of incoming extrinsics and their sender accounts is done at the transaction queue validation layer, using the `SignedExtension` trait.
+The filtering of incoming extrinsics and their sender accounts is done during the transaction queue validation, using the `SignedExtension` trait.
 
 ## Usage
 
 * Add the module's dependency in the `Cargo.toml` of your `runtime` directory. Make sure to enter the correct path or git url of the pallet as per your setup.
 
 ```toml
-[dependencies.substrate_account_set]
+[dependencies.accountset]
 package = 'substrate-account-set'
 git = 'https://github.com/gautamdhameja/substrate-account-set.git'
 default-features = false
@@ -20,9 +20,9 @@ default-features = false
 * Declare the pallet in your `runtime/src/lib.rs`.
 
 ```rust
-pub use substrate_account_set;
+pub use accountset;
 
-impl substrate_account_set::Trait for Runtime {
+impl accountset::Trait for Runtime {
     type Event = Event;
 }
 
@@ -35,7 +35,7 @@ construct_runtime!(
         ...
         ...
         ...
-        AccountSet: substrate_account_set::{Module, Call, Storage, Event<T>, Config<T>},
+        AccountSet: accountset::{Module, Call, Storage, Event<T>, Config<T>},
     }
 );
 ```
@@ -47,13 +47,13 @@ pub type SignedExtra = (
     ...
     ...
     balances::TakeFees<Runtime>,
-    substrate_account_set::AllowAccount<Runtime>
+    accountset::AllowAccount<Runtime>
 ```
 
 * Add a genesis configuration for the module in the `src/chain_spec.rs` file. This configuration adds the initial account ids to the account allow-list.
 
 ```rust
-    substrate_account_set: Some(AccountSetConfig {
+    accountset: Some(AccountSetConfig {
         allowed_accounts: vec![
             (get_account_id_from_seed::<sr25519::Public>("Alice"), ()),
             (get_account_id_from_seed::<sr25519::Public>("Bob"), ())],
@@ -62,7 +62,7 @@ pub type SignedExtra = (
 
 * `cargo build --release` and then `cargo run --release -- --dev`
 
-When the node starts, only the account ids added in the genesis config of this module will be able to send extrinsics to the runtime. This means that you **should not leave the genesis config empty** or else no one will be able to submit any extrinsics.
+When the node starts, only the `AccountId`s added in the genesis config of this module will be able to send extrinsics to the runtime. This means that you **should not leave the genesis config empty** or else no one will be able to submit any extrinsics.
 
 New `AccountId`s can be added to the allow-list by calling the pallet's `add_account` function using `root` key as origin.
 
