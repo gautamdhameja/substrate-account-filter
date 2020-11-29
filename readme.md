@@ -72,8 +72,8 @@ The usage of this pallet are demonstrated in the [Substrate permissioning sample
 
 ## Potential extension
 
-* The addition and removal of account id's to the allow-list could also be done using other governance methods instead of root.
-* The logic can be reversed to maintain a deny-list of accounts which cannot send extrinsics to the runtime.
+* The addition and removal of `AccountId`s to the allow-list can also be done using other governance methods instead of root.
+* The logic can be reversed to maintain a deny-list of accounts to prevent those `AccountId`s from sending extrinsics.
 
 ## Disclaimer
 

@@ -30,19 +30,10 @@ pub trait Trait: system::Trait {
 
 decl_storage! {
     trait Store for Module<T: Trait> as AccountSet {
-
-        // The allow-list is a _set_ of accounts. Because maps are supported by decl_storage,
-        // we map to (), and use the map for faster lookups.
+        // The allow-list is a _set_ of accounts.
+        // We map to (), and use the map for faster lookups.
         AllowedAccounts get(fn allowed_accounts) config(): map hasher(blake2_128_concat) T::AccountId => ();
     }
-	// add_extra_genesis {
-	// 	config(allowed_accounts): Vec<T::AccountId>;
-	// 	build(|config: &GenesisConfig<T>| {
-	// 		for acct in config.allowed_accounts.iter() {
-	// 			<AllowedAccounts<T>>::insert(acct, ());
-	// 		}
-	// 	})
-	// }
 }
 
 decl_module! {
