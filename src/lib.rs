@@ -39,7 +39,6 @@ pub mod pallet {
 
 	// The pallet's runtime storage items.
 	#[pallet::storage]
-	#[pallet::getter(fn validators)]
 	pub type AllowedAccounts<T: Config> =  StorageMap<_, Blake2_128Concat, T::AccountId, ()>;
 
 	#[pallet::event]
