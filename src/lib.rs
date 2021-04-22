@@ -9,12 +9,7 @@ use sp_std::prelude::*;
 use codec::{Decode, Encode};
 use sp_std::marker::PhantomData;
 use sp_std::fmt::Debug;
-use frame_support::{
-    decl_event, decl_storage, decl_module,
-    dispatch,
-    weights::DispatchInfo,
-};
-use frame_system::{self as system, ensure_root};
+use frame_support::{weights::DispatchInfo};
 use sp_runtime::{
     transaction_validity::{
 		ValidTransaction, TransactionValidityError,
@@ -24,62 +19,99 @@ use sp_runtime::{
     traits::{SignedExtension, DispatchInfoOf, Dispatchable}
 };
 
-pub trait Trait: system::Trait {
-    type Event: From<Event<Self>> + Into<<Self as system::Trait>::Event>;
-}
+pub use pallet::*;
 
-decl_storage! {
-    trait Store for Module<T: Trait> as AccountSet {
-        // The allow-list is a _set_ of accounts.
-        // We map to (), and use the map for faster lookups.
-        AllowedAccounts get(fn allowed_accounts) config(): map hasher(blake2_128_concat) T::AccountId => ();
-    }
-}
+#[frame_support::pallet]
+pub mod pallet {
+	use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
+	use frame_system::pallet_prelude::*;
+	use super::*;
 
-decl_module! {
-    pub struct Module<T: Trait> for enum Call where origin: T::Origin {
+	/// Configure the pallet by specifying the parameters and types on which it depends.
+	#[pallet::config]
+	pub trait Config: frame_system::Config {
+		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+	}
 
-        fn deposit_event() = default;
+	#[pallet::pallet]
+	#[pallet::generate_store(pub(super) trait Store)]
+	pub struct Pallet<T>(_);
 
-        /// Add a new account to the allow-list.
+	// The pallet's runtime storage items.
+	#[pallet::storage]
+	pub type AllowedAccounts<T: Config> =  StorageMap<_, Blake2_128Concat, T::AccountId, ()>;
+
+	#[pallet::event]
+	#[pallet::metadata(T::AccountId = "AccountId")]
+	#[pallet::generate_deposit(pub(super) fn deposit_event)]
+	pub enum Event<T: Config> {
+		// When a new account is added to the allow-list.
+        AccountAllowed(T::AccountId),
+        // When an account is removed from the allow-list.
+        AccountRemoved(T::AccountId),
+	}
+
+	#[pallet::hooks]
+	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
+
+	#[pallet::genesis_config]
+	pub struct GenesisConfig<T: Config>{
+		pub allowed_accounts: Vec<(T::AccountId, ())>,
+	}
+
+	#[cfg(feature = "std")]
+	impl<T: Config> Default for GenesisConfig<T> {
+		fn default() -> Self {
+			Self { allowed_accounts: Vec::new() }
+		}
+	}
+
+	#[pallet::genesis_build]
+	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
+		fn build(&self) {
+			Pallet::<T>::initialize_allowed_accounts(&self.allowed_accounts);
+		}
+	}
+
+	#[pallet::call]
+	impl<T:Config> Pallet<T> {
+		/// Add a new account to the allow-list.
         /// Can only be called by the root.
-        #[weight = 0]
-        pub fn add_account(origin, new_account: T::AccountId) -> dispatch::DispatchResult {
+        #[pallet::weight(0)]
+        pub fn add_account(origin: OriginFor<T>, new_account: T::AccountId) -> DispatchResultWithPostInfo {
             ensure_root(origin)?;
 
             <AllowedAccounts<T>>::insert(&new_account, ());
 
-            Self::deposit_event(RawEvent::AccountAllowed(new_account));
+            Self::deposit_event(Event::AccountAllowed(new_account));
 
-            Ok(())
+            Ok(().into())
         }
 
-        /// Remove an account from the allow-list.
+		/// Remove an account from the allow-list.
         /// Can only be called by the root.
-        #[weight = 0]
-        pub fn remove_account(origin, account_to_remove: T::AccountId) -> dispatch::DispatchResult {
+        #[pallet::weight(0)]
+        pub fn remove_account(origin: OriginFor<T>, account_to_remove: T::AccountId) -> DispatchResultWithPostInfo {
             ensure_root(origin)?;
 
             <AllowedAccounts<T>>::remove(&account_to_remove);
 
-            Self::deposit_event(RawEvent::AccountRemoved(account_to_remove));
+            Self::deposit_event(Event::AccountRemoved(account_to_remove));
 
-            Ok(())
+            Ok(().into())
         }
-    }
+	}
 }
 
-decl_event!(
-    pub enum Event<T>
-    where
-        AccountId = <T as system::Trait>::AccountId,
-    {
-        // When a new account is added to the allow-list.
-        AccountAllowed(AccountId),
-        // When an account is removed from the allow-list.
-        AccountRemoved(AccountId),
-    }
-);
+impl<T: Config> Pallet<T> {
+	fn initialize_allowed_accounts(allowed_accounts: &[(T::AccountId, ())]) {
+		if !allowed_accounts.is_empty() {
+			for (account, extrinsics) in allowed_accounts.iter() {
+				<AllowedAccounts<T>>::insert(account, extrinsics);
+			}
+		}
+	}
+}
 
 /// The following section implements the `SignedExtension` trait
 /// for the `AllowAccount` type.
@@ -94,11 +126,18 @@ decl_event!(
 ///  and the extrinsics are filtered out before they hit the pallet logic.
 
 /// The `AllowAccount` struct.
-#[derive(Encode, Decode, Clone, Eq, PartialEq)]
-pub struct AllowAccount<T: Trait + Send + Sync>(PhantomData<T>);
+#[derive(Encode, Decode, Clone, Eq, PartialEq, Default)]
+pub struct AllowAccount<T: Config + Send + Sync>(PhantomData<T>);
+
+impl<T: Config + Send + Sync> AllowAccount<T> {
+	/// utility constructor. Used only in client/factory code.
+	pub fn new() -> Self {
+		Self(PhantomData)
+	}
+}
 
 /// Debug impl for the `AllowAccount` struct.
-impl<T: Trait + Send + Sync> Debug for AllowAccount<T> {
+impl<T: Config + Send + Sync> Debug for AllowAccount<T> {
 	#[cfg(feature = "std")]
 	fn fmt(&self, f: &mut sp_std::fmt::Formatter) -> sp_std::fmt::Result {
 		write!(f, "AllowAccount")
@@ -111,7 +150,7 @@ impl<T: Trait + Send + Sync> Debug for AllowAccount<T> {
 }
 
 /// Implementation of the `SignedExtension` trait for the `AllowAccount` struct.
-impl<T: Trait + Send + Sync> SignedExtension for AllowAccount<T> where 
+impl<T: Config + Send + Sync> SignedExtension for AllowAccount<T> where
     T::Call: Dispatchable<Info=DispatchInfo> {
     type AccountId = T::AccountId;
 	type Call = T::Call;

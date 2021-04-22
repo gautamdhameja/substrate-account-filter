@@ -22,7 +22,7 @@ default-features = false
 ```rust
 pub use accountset;
 
-impl accountset::Trait for Runtime {
+impl accountset::Config for Runtime {
     type Event = Event;
 }
 
@@ -53,6 +53,8 @@ pub type SignedExtra = (
 * Add a genesis configuration for the module in the `src/chain_spec.rs` file. This configuration adds the initial account ids to the account allow-list.
 
 ```rust
+    use node_template_runtime::{..., AccountSetConfig};
+    ...
     accountset: Some(AccountSetConfig {
         allowed_accounts: vec![
             (get_account_id_from_seed::<sr25519::Public>("Alice"), ()),
