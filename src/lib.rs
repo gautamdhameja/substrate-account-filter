@@ -1,4 +1,4 @@
-//! # Account Set Pallet
+//! # Account Filter Pallet
 //!
 //! The Account Filter Pallet provides functionality to restrict extrinsic submission to a set of
 //! allowed accounts. The filtering of accounts is done during the transaction queue validation.
@@ -44,9 +44,9 @@ pub mod pallet {
     #[pallet::metadata(T::AccountId = "AccountId")]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
-		// When a new account is added to the allow-list.
+        // When a new account is added to the allow-list.
         AccountAllowed(T::AccountId),
-		// When an account is removed from the allow-list.
+        // When an account is removed from the allow-list.
         AccountRemoved(T::AccountId),
     }
 
@@ -76,8 +76,8 @@ pub mod pallet {
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-		/// Add a new account to the allow-list.
-		/// Can only be called by the root.
+        /// Add a new account to the allow-list.
+        /// Can only be called by the root.
         #[pallet::weight(0)]
         pub fn add_account(
             origin: OriginFor<T>,
@@ -91,9 +91,9 @@ pub mod pallet {
 
             Ok(().into())
         }
-		
-		/// Remove an account from the allow-list.
-		/// Can only be called by the root.
+        
+        /// Remove an account from the allow-list.
+        /// Can only be called by the root.
         #[pallet::weight(0)]
         pub fn remove_account(
             origin: OriginFor<T>,
