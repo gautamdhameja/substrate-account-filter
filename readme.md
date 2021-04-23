@@ -1,6 +1,6 @@
-# Substrate Account Set
+# Substrate Account Filter
 
-A [Substrate](https://github.com/paritytech/substrate) pallet for account-level permissioning.
+A [Substrate](https://github.com/paritytech/substrate) pallet for account-level filtering/permissioning.
 
 The pallet maintains a allow-list of accounts that are permitted to submit extrinsics. Sudo (or any other governance mechanism, when supported) could be used to add and remove accounts from this list.
 
@@ -11,18 +11,18 @@ The filtering of incoming extrinsics and their sender accounts is done during th
 * Add the module's dependency in the `Cargo.toml` of your `runtime` directory. Make sure to enter the correct path or git url of the pallet as per your setup.
 
 ```toml
-[dependencies.accountset]
-package = 'substrate-account-set'
-git = 'https://github.com/gautamdhameja/substrate-account-set.git'
+[dependencies.account_filter]
+package = 'substrate-account-filter'
+git = 'https://github.com/gautamdhameja/substrate-account-filter.git'
 default-features = false
 ```
 
 * Declare the pallet in your `runtime/src/lib.rs`.
 
 ```rust
-pub use accountset;
+pub use account_filter;
 
-impl accountset::Config for Runtime {
+impl account_filter::Config for Runtime {
     type Event = Event;
 }
 
@@ -35,7 +35,7 @@ construct_runtime!(
         ...
         ...
         ...
-        AccountSet: accountset::{Module, Call, Storage, Event<T>, Config<T>},
+        AccountSet: account_filter::{Module, Call, Storage, Event<T>, Config<T>},
     }
 );
 ```
@@ -47,15 +47,15 @@ pub type SignedExtra = (
     ...
     ...
     balances::TakeFees<Runtime>,
-    accountset::AllowAccount<Runtime>
+    account_filter::AllowAccount<Runtime>
 ```
 
 * Add a genesis configuration for the module in the `src/chain_spec.rs` file. This configuration adds the initial account ids to the account allow-list.
 
 ```rust
-    use node_template_runtime::{..., AccountSetConfig};
+    use node_template_runtime::{..., AccountFilterConfig};
     ...
-    accountset: Some(AccountSetConfig {
+    account_filter: Some(AccountFilterConfig {
         allowed_accounts: vec![
             (get_account_id_from_seed::<sr25519::Public>("Alice"), ()),
             (get_account_id_from_seed::<sr25519::Public>("Bob"), ())],

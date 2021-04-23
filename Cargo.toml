@@ -1,15 +1,15 @@
 [package]
-name = "substrate-account-set"
+name = "substrate-account-filter"
 version = "3.0.0"
 authors = ["Gautam Dhameja <quasijatt@outlook.com>"]
 edition = "2018"
 license = "Apache-2.0"
-repository = "https://github.com/gautamdhameja/substrate-account-set"
+repository = "https://github.com/gautamdhameja/substrate-account-filter"
 
 [features]
 default = ['std']
 std = [
-    'codec/std',
+    'parity-scale-codec/std',
     'sp-std/std',
     'sp-runtime/std',
     'frame-support/std',
@@ -19,13 +19,8 @@ std = [
     'serde',
 ]
 
-[dependencies.codec]
-default-features = false
-features = ['derive']
-package = 'parity-scale-codec'
-version = '2.0.0'
-
 [dependencies]
+parity-scale-codec = { default-features = false, features = ['derive'], version = '2.1.1' }
 serde = { features = ['derive'], optional = true, version = '1.0.101' }
 sp-std = { default-features = false, version = '3.0.0' }
 sp-runtime = { default-features = false, version = '3.0.0' }
