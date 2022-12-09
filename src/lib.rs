@@ -30,6 +30,7 @@ pub mod pallet {
     #[pallet::config]
     pub trait Config: frame_system::Config {
         type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
+        type ValidateOrigin: EnsureOrigin<Self::RuntimeOrigin>;
     }
 
     #[pallet::pallet]
@@ -82,7 +83,7 @@ pub mod pallet {
             origin: OriginFor<T>,
             new_account: T::AccountId,
         ) -> DispatchResultWithPostInfo {
-            ensure_root(origin)?;
+            T::ValidateOrigin::ensure_origin(origin)?;
 
             <AllowedAccounts<T>>::insert(&new_account, ());
 
@@ -98,7 +99,7 @@ pub mod pallet {
             origin: OriginFor<T>,
             account_to_remove: T::AccountId,
         ) -> DispatchResultWithPostInfo {
-            ensure_root(origin)?;
+            T::ValidateOrigin::ensure_origin(origin)?;
 
             <AllowedAccounts<T>>::remove(&account_to_remove);
 
@@ -187,7 +188,7 @@ pub mod pallet {
                     ..Default::default()
                 })
             } else {
-                Err(InvalidTransaction::Call.into())
+                Err(InvalidTransaction::BadSigner.into())
             }
         }
 
