@@ -26,6 +26,8 @@ pub mod pallet {
     use sp_std::fmt::Debug;
     use sp_std::marker::PhantomData;
     use sp_std::prelude::*;
+    use sp_std::convert::TryInto;
+
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
@@ -39,6 +41,7 @@ pub mod pallet {
 
     // The pallet's runtime storage items.
     #[pallet::storage]
+    #[pallet::getter(fn allowed_accounts)]
     pub type AllowedAccounts<T: Config> = StorageMap<_, Blake2_128Concat, T::AccountId, ()>;
 
     #[pallet::event]
@@ -48,6 +51,12 @@ pub mod pallet {
         AccountAllowed(T::AccountId),
         // When an account is removed from the allow-list.
         AccountRemoved(T::AccountId),
+    }
+
+    #[pallet::error]
+    pub enum Error<T> {
+        Duplicate,
+        AccountNotAdded,
     }
 
     #[pallet::hooks]
@@ -77,35 +86,36 @@ pub mod pallet {
     #[pallet::call]
     impl<T: Config> Pallet<T> {
         /// Add a new account to the allow-list.
-        /// Can only be called by the root.
+        /// Can only be called by the defined origin.
         #[pallet::weight(0)]
         pub fn add_account(
             origin: OriginFor<T>,
             new_account: T::AccountId,
         ) -> DispatchResultWithPostInfo {
             T::ValidateOrigin::ensure_origin(origin)?;
+            ensure!(!<AllowedAccounts<T>>::contains_key(&new_account), Error::<T>::Duplicate);
 
             <AllowedAccounts<T>>::insert(&new_account, ());
-
             Self::deposit_event(Event::AccountAllowed(new_account));
 
             Ok(().into())
         }
 
         /// Remove an account from the allow-list.
-        /// Can only be called by the root.
+        /// Can only be called by the defined origin.
         #[pallet::weight(0)]
         pub fn remove_account(
             origin: OriginFor<T>,
             account_to_remove: T::AccountId,
-        ) -> DispatchResultWithPostInfo {
+        ) -> DispatchResult {
             T::ValidateOrigin::ensure_origin(origin)?;
+            ensure!(<AllowedAccounts<T>>::contains_key(&account_to_remove), Error::<T>::AccountNotAdded);
 
             <AllowedAccounts<T>>::remove(&account_to_remove);
 
             Self::deposit_event(Event::AccountRemoved(account_to_remove));
 
-            Ok(().into())
+            Ok(())
         }
     }
 

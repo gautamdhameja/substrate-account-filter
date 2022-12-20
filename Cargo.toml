@@ -16,6 +16,7 @@ std = [
     'sp-core/std',
     'frame-system/std',
     'serde',
+    'pallet-balances/std',
 ]
 
 [dependencies]
@@ -28,3 +29,8 @@ sp-core = { version = "7.0.0", default-features = false, git = "https://github.c
 frame-support = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.34" }
 frame-system = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.34" }
 
+arrayvec = "0.7.2"
+
+[dev-dependencies]
+sp-io = { version = "7.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.34" }
+pallet-balances = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.34" }
