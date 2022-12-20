@@ -1,8 +1,9 @@
 mod mock;
 
-use crate::mock::{test, RuntimeOrigin, Test, AccountFilter, Balances};
-use frame_support::{assert_noop, assert_ok, pallet_prelude::*};
+use crate::mock::{test, RuntimeOrigin, Test, AccountFilter, CALL};
+use frame_support::{assert_noop, assert_ok, pallet_prelude::*, dispatch::DispatchInfo};
 use substrate_account_filter::{Error, Event};
+use sp_runtime::traits::SignedExtension;
 
 #[test]
 fn default_test() {
@@ -70,7 +71,52 @@ fn removing_failure() {
 #[test]
 fn send_transfer_success() {
     test().execute_with(|| {
+        let info = DispatchInfo::default();
+		let len = 0_usize;
         assert!(matches!(AccountFilter::allowed_accounts(2u64), Some(_)));
-        assert_ok!(Balances::transfer(RuntimeOrigin::signed(2), 1, 10));
+        assert_ok!(substrate_account_filter::AllowAccount::<Test>::new().validate(&2, &CALL, &info, len));
     });
+}
+
+#[test]
+fn send_transfer_failure() {
+    let mut ext = test();
+    ext.execute_with(|| {
+        let info = DispatchInfo::default();
+		let len = 0_usize;
+        assert_eq!(AccountFilter::allowed_accounts(3u64), None);
+        assert_noop!(substrate_account_filter::AllowAccount::<Test>::new().validate(&3, &CALL, &info, len), InvalidTransaction::BadSigner);
+    });
+
+    ext.commit_all().unwrap();
+}
+
+#[test]
+fn send_success_after_adding_account() {
+    let mut ext = test();
+    ext.execute_with(|| {
+        let info = DispatchInfo::default();
+		let len = 0_usize;
+        assert_eq!(AccountFilter::allowed_accounts(3u64), None);
+        assert_noop!(substrate_account_filter::AllowAccount::<Test>::new().validate(&3, &CALL, &info, len), InvalidTransaction::BadSigner);
+        assert_ok!(AccountFilter::add_account(RuntimeOrigin::root(), 3));
+        assert_ok!(substrate_account_filter::AllowAccount::<Test>::new().validate(&3, &CALL, &info, len));
+    });
+
+    ext.commit_all().unwrap();
+}
+
+#[test]
+fn send_fails_after_removing() {
+    let mut ext = test();
+    ext.execute_with(|| {
+        let info = DispatchInfo::default();
+		let len = 0_usize;
+        assert!(matches!(AccountFilter::allowed_accounts(2u64), Some(_)));
+        assert_ok!(substrate_account_filter::AllowAccount::<Test>::new().validate(&2, &CALL, &info, len));
+        assert_ok!(AccountFilter::remove_account(RuntimeOrigin::root(), 2));
+        assert_noop!(substrate_account_filter::AllowAccount::<Test>::new().validate(&2, &CALL, &info, len), InvalidTransaction::BadSigner);
+    });
+
+    ext.commit_all().unwrap();
 }

@@ -11,6 +11,9 @@ use sp_runtime::{
 use sp_core::H256;
 use sp_std::convert::{TryFrom, TryInto};
 
+pub const CALL: &<Test as frame_system::Config>::RuntimeCall =
+	&RuntimeCall::System(frame_system::Call::set_heap_pages { pages: 0u64 });
+
 impl_opaque_keys! {
 	pub struct MockSessionKeys {
 		pub dummy: UintAuthorityId,
@@ -22,7 +25,6 @@ type Block  = sp_runtime::generic::Block<sp_runtime::generic::Header<<Test as fr
 type SignedExtra = (
     account_filter::AllowAccount<Test>,
 );
-type Balance = u64;
 
 frame_support::construct_runtime!(
 	pub enum Test where
@@ -31,9 +33,7 @@ frame_support::construct_runtime!(
 		UncheckedExtrinsic = UncheckedExtrinsic,
 	{
 		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-		AccountFilter: account_filter,
-        Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
-
+		AccountFilter: account_filter
 	}
 );
 
@@ -61,7 +61,7 @@ impl frame_system::Config for Test {
 	type BlockHashCount = BlockHashCount;
 	type Version = ();
 	type PalletInfo = PalletInfo;
-	type AccountData = pallet_balances::AccountData<u64>;
+	type AccountData = ();
 	type OnNewAccount = ();
 	type OnKilledAccount = ();
 	type SystemWeightInfo = ();
@@ -79,34 +79,12 @@ parameter_types! {
 	pub const ExistentialDeposit: u64 = 10;
 }
 
-impl pallet_balances::Config for Test {
-	type Balance = Balance;
-	type RuntimeEvent = RuntimeEvent;
-	type DustRemoval = ();
-	type ExistentialDeposit = frame_support::traits::ConstU64<10>;
-	type AccountStore = System;
-	type MaxLocks = ();
-	type WeightInfo = ();
-	type MaxReserves = frame_support::traits::ConstU32<50>;
-	type ReserveIdentifier = [u8; 8];
-}
-
 pub fn test() -> sp_io::TestExternalities {
     let mut t = frame_system::GenesisConfig::default().build_storage::<Test>().unwrap();
     account_filter::GenesisConfig::<Test> {
         allowed_accounts: vec![(1, ()).into(), (2, ()).into()]
     }.assimilate_storage(&mut t).unwrap();
-    pallet_balances::GenesisConfig::<Test> {
-        balances:
-            vec![
-                (1, 100),
-                (2, 100),
-                (3, 100),
-                (4, 100)
-            ]
-    }
-    .assimilate_storage(&mut t)
-    .unwrap();
+
     let mut ext = sp_io::TestExternalities::new(t);
     ext.execute_with(|| System::set_block_number(1));
     ext
