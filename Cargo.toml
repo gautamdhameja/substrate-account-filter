@@ -1,7 +1,7 @@
 [package]
 name = "substrate-account-filter"
 version = "4.0.0"
-authors = ["Gautam Dhameja <quasijatt@outlook.com>", "Artur-Yurii Korchynskyi <artur.yurii.korchynskyi@gmail.com>]
+authors = ["Gautam Dhameja <quasijatt@outlook.com>", "Artur-Yurii Korchynskyi <artur.yurii.korchynskyi@gmail.com>"]
 edition = "2018"
 license = "Apache-2.0"
 repository = "https://github.com/gautamdhameja/substrate-account-filter"
