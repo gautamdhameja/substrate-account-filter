@@ -1,34 +1,19 @@
-[package]
-name = "substrate-account-filter"
-version = "4.0.0"
-authors = ["Gautam Dhameja <quasijatt@outlook.com>", "Artur-Yurii Korchynskyi <artur.yurii.korchynskyi@gmail.com>"]
-edition = "2018"
-license = "Apache-2.0"
-repository = "https://github.com/gautamdhameja/substrate-account-filter"
-
-[features]
-default = ['std']
-std = [
-    'parity-scale-codec/std',
-    'sp-std/std',
-    'sp-runtime/std',
-    'frame-support/std',
-    'sp-core/std',
-    'frame-system/std',
-    'serde',
+[workspace]
+members = [
+    "frame/account-filter"
 ]
 
-[dependencies]
-parity-scale-codec = { default-features = false, features = ['derive'], version = '3.0.0' }
-scale-info = { version = "2.1.1", default-features = false, features = ["derive"] }
-serde = { features = ['derive'], optional = true, version = '1.0.101' }
-sp-std = { version = "5.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.34" }
-sp-runtime = { version = "7.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.34" }
-sp-core = { version = "7.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.34" }
-frame-support = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.34" }
-frame-system = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.34" }
-
+[workspace.dependencies]
+# General purpose dependencies
+parity-scale-codec = { version = '3.0.0' }
+scale-info = { version = "2.1.1" }
+serde = { version = '1.0.101' }
 arrayvec = "0.7.2"
 
-[dev-dependencies]
-sp-io = { version = "7.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.34" }
+# Substrate dependencies
+sp-std = { version = "5.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.35" }
+sp-runtime = { version = "7.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.35" }
+sp-core = { version = "7.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.35" }
+sp-io = { version = "7.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.35" }
+frame-support = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.35" }
+frame-system = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.35" }
